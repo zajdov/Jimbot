@@ -62,7 +62,8 @@ class Validator:
                 bytes_buffer: bytearray = bytearray()
 
                 async for chunk in content.iter_chunked(4096):
-                    if not chunk: break
+                    if not chunk:
+                        break
                     bytes_buffer.extend(chunk)
 
         except Exception as e:
@@ -91,7 +92,7 @@ class Validator:
                 warnings += w
                 errors += e
             
-            return (errors, warnings)
+            return errors, warnings
 
     async def download_tileset(self, tileset: Tileset):
 
@@ -103,7 +104,8 @@ class Validator:
             if response.ok:
                 while True:
                     chunk = await response.content.read(1024)
-                    if not chunk: break
+                    if not chunk:
+                        break
                     bytes_buffer.write(chunk)
             else:
                 response.raise_for_status()
@@ -114,7 +116,7 @@ class Validator:
     async def cache_tileset(self, tileset: Tileset):
         """
         
-        save the modified debug tilesetand 
+        save the modified debug tileset
         and list of its empty tiles to disk
         
         """
@@ -140,7 +142,8 @@ class Validator:
             await aiopath.AsyncPath('blanks').mkdir(exist_ok=True)
             file_path: str = 'blanks/' + tileset.name
             async with aiofiles.open(file_path, 'w') as file:
-                for tile_id in tileset.blank_tiles: await file.write(f'{tile_id}\n')
+                for tile_id in tileset.blank_tiles:
+                    await file.write(f'{tile_id}\n')
         
         except Exception as e:
             log.error(f'saving {tileset.name} failed', e)
@@ -157,12 +160,12 @@ class Validator:
         blanks: set[int] = tileset.blank_tiles
 
         if image.width % 8 or image.height % 8:
-            log.error('Invalid tileset dimnesions')
+            log.error('Invalid tileset dimensions')
             return
 
         blank_tile: Image = Image.new('RGBA', (8, 8), (0,) * 4)
         tiles_x, tiles_y = image.width // 8, image.height // 8
-        COLOR_PURPLE: tuple[int] = (255, 0, 255, 127)
+        color_purple: tuple[int, ...] = (255, 0, 255, 127)
 
         for tile_id in range(tiles_x * tiles_y):
 
@@ -177,7 +180,7 @@ class Validator:
             )
 
             if blank_tile.tobytes() == image.crop(tile_box).tobytes():
-                image.paste(COLOR_PURPLE, tile_box)
+                image.paste(color_purple, tile_box)
                 blanks.add(tile_id)
         
     async def get_version(self) -> int:
@@ -278,24 +281,24 @@ class MapLevel:
         errors: int = 0
 
         for layer in self.layers:
-            indentifier: str = layer.get('__identifier')
-            if not indentifier in self.LAYER_MAP or not layer.get('gridTiles'):
+            identifier: str = layer.get('__identifier')
+            if identifier not in self.LAYER_MAP or not layer.get('gridTiles'):
                 continue
 
-            tileset: Tileset = self.LAYER_MAP.get(indentifier)
+            tileset: Tileset = self.LAYER_MAP.get(identifier)
 
-            colidable: bool = indentifier in (
+            collidable: bool = identifier in (
                 'Walls', 'Walls2', 'Objects', 'Objects2'
             )
 
             blank_tiles: int = self.count_holes(layer, tileset)
 
-            if colidable:
+            if collidable:
                 errors += blank_tiles
             else:
                 warnings += blank_tiles
         
-        return (errors, warnings)
+        return errors, warnings
 
     def count_holes(self, layer: dict, tileset: Tileset) -> int:
         

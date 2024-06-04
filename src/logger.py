@@ -48,4 +48,5 @@ class Logger:
     def debug(self, *args: any) -> None:
         self.log.debug(concatenate(args))
 
+
 log = Logger()

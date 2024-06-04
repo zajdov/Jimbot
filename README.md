@@ -1,2 +1,5 @@
 # Jimbot
-Jimbot is a Discord application (bot) that provides some useful commands.
+
+Discord application (bot) that provides some useful commands.
+
+at the moment just `!validate` and `!wiki`

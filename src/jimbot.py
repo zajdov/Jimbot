@@ -146,6 +146,6 @@ class Jimbot(Client):
             color: str = '#DD2E44'  # red
 
         embed.color = Color.from_str(color)
-        embed.set_footer(text='Validator scans the map for blank tiles on all layers. If a blank file is found in a collidable layer, it will count as an error, whereas non-collidable layer will result in a warning.', icon_url=None)
+        embed.set_footer(text='Validator scans the map for blank tiles on all layers. If a blank file is found in a collidable layer, it will count as an error, whereas non-collidable layer will result in a warning.')
 
         return embed

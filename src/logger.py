@@ -1,7 +1,3 @@
-"""
-logger.py
-"""
-
 
 import logging
 

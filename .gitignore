@@ -162,8 +162,15 @@ cython_debug/
 #.idea/
 
 .vscode
+.idea
 
-blanks/
 tilesets/
+blanks/
+saved/
+
 version
-token
+botjim
+jimbot
+defs
+
+todo.txt

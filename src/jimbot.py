@@ -42,7 +42,7 @@ class Jimbot(Client):
             870770948951924756  # tales of yore
         }
 
-        self.message_reactions: dict[int, any] = {}
+        self.message_reactions: dict[int, int] = {}
         self.message_handlers: dict[str, any] = {}
 
         handlers = filter(
@@ -278,7 +278,7 @@ class Jimbot(Client):
         try:
             updated_map: File = File(update_result, filename=f'updated_{attachment.filename}')
             bot_response: Message = await channel.send(embed=embed_success, file=updated_map)
-            self.message_reactions[bot_response.id] = (author.id, attachment)
+            self.message_reactions[bot_response.id] = author.id
             await bot_response.add_reaction('🗑️')
     
         except Exception as e:

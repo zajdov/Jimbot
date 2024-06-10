@@ -14,9 +14,8 @@ async def main():
     validator: Validator = Validator()
     jimbot.validator = validator
 
-    with open('botjim', 'r') as token_file:
+    with open('token', 'r') as token_file:
         bot_token: str = token_file.read()
-
 
     await asyncio.gather(
         asyncio.create_task(jimbot.start(bot_token)),
@@ -25,8 +24,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    try:  # TODO remove
-        asyncio.run(main())
-
-    except KeyboardInterrupt:
-        pass
+    asyncio.run(main())

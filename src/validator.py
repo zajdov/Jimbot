@@ -349,10 +349,10 @@ class Validator:
         async with self.client_session.get(url=url_version) as response:
             response.raise_for_status()
 
-            response_text = await response.text().strip()
+            response_text = await response.text()
 
             try:
-                current_version: int = int(response_text)
+                current_version: int = int(response_text.strip())
             
             except ValueError:
                 log.error(f'invalid version "{response_text}"')
@@ -376,9 +376,7 @@ class Validator:
 
     async def load_cached(self) -> None:
 
-        if not await aiopath.AsyncPath('version').exists():
-            return
-
+        # TODO move this down once version dependent
         defs_path: str = 'defs'
         if await aiopath.AsyncPath(defs_path).exists():
             async with aiofiles.open(defs_path, 'r') as defs_file:
@@ -387,6 +385,9 @@ class Validator:
         else:
             log.warn(f'file "{defs_path}" was not found')
 
+        if not await aiopath.AsyncPath('version').exists():
+            return
+        
         for tileset in Tileset:
 
             tileset_path: str = 'tilesets/' + tileset.file_name

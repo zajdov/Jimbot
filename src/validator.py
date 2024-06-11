@@ -234,7 +234,7 @@ class Validator:
         self.cached_defs: dict = {}
 
     async def process_validate(self, attachment) -> tuple[int, int] | None:
-        # only LDTk version matters due to JSON schema
+        # only LDtk version matters due to JSON schema
         # tileset version is irrelevant as tile positions
         # are not changed, but new tiles are added
 
@@ -408,8 +408,9 @@ class Validator:
                 continue
 
             async with aiofiles.open(blanks_path, 'r') as blanks_file:
-                tileset.blank_tiles = \
-                    {int(n) for n in await blanks_file.readlines() if n}
+                tileset.blank_tiles = {
+                    int(n) for n in await blanks_file.readlines() if n
+                }
         
         async with aiofiles.open('version', 'r') as version_file:
             version_content: str = await version_file.read()

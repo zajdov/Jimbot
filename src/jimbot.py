@@ -195,9 +195,7 @@ class Jimbot(Client):
     @handle
     async def _wiki(self, message: Message):
 
-        content, channel = message.content, message.channel
-
-        if len(arg_items := content.split(' ')) > 1:
+        if len(arg_items := message.content.split(' ')) > 1:
             search_args: str = ' '.join(arg_items[1:]).strip()
             query: str = parse.quote(search_args)
 
@@ -206,18 +204,16 @@ class Jimbot(Client):
         else:
             url_wiki: str = 'https://talesofyore.com/wiki/index.php/Tales_of_Yore_Wiki'
 
-        await channel.send(url_wiki)
+        await message.channel.send(url_wiki)
 
     @handle
     async def _validate(self, message: Message):
 
-        attachments: list[Attachment] = message.attachments
-
-        if not attachments:
+        if not message.attachments:
             await message.reply('To validate your map, upload the file with the command.')
             return
 
-        attachment: Attachment = attachments[0]
+        attachment: Attachment = message.attachments[0]
         file_name: str = attachment.filename
 
         accepted_types: tuple = ('.ldtk', '.ldtkl', '.json')
@@ -241,8 +237,6 @@ class Jimbot(Client):
 
     async def respond_update(self, message: Message, attachment: Attachment):
 
-        author, channel = message.author, message.channel
-
         embed_success = Embed(
             title='LDtk Map Updater',
             description=f':white_check_mark: Your map `{attachment.filename}` has been updated successfully!\n\nReact to this message with :wastebasket: for deletion.',
@@ -251,25 +245,26 @@ class Jimbot(Client):
 
         embed_warning = Embed(
             title='LDtk Map Updater',
-            description=f':warning: Your map `{attachment.filename}` is already up to date.',
+            description=f':warning: Your map `{attachment.filename}` is already up-to-date.',
             color=Color.from_str('#FFCC4D')
         )
 
         embed_error = Embed(
             title='LDtk Map Updater',
-            description=f':no_entry_sign: Failed to update `{attachment.filename}` uploaded by <@{author.id}> Sorry! \n\n<@503592464934764554> This is on You!',
+            description=f':no_entry_sign: Failed to update `{attachment.filename}` uploaded by <@{message.author.id}> Sorry! \n\n<@503592464934764554> This is on You!',
             color=Color.from_str('#DD2E44')
         )
 
         update_result: bytes | bool = await self.validator.process_update(attachment)
-        
+        channel = message.channel
+
         if update_result is False:
             log.warn('failed updating map')
             await channel.send(embed=embed_error)
             return
         
         elif update_result is True:
-            log.info('map is already up to date')
+            log.info('your map is already up-to-date')
             await channel.send(embed=embed_warning)
             return
 
@@ -278,7 +273,7 @@ class Jimbot(Client):
         try:
             updated_map: File = File(update_result, filename=f'updated_{attachment.filename}')
             bot_response: Message = await channel.send(embed=embed_success, file=updated_map)
-            self.message_reactions[bot_response.id] = author.id
+            self.message_reactions[bot_response.id] = message.author.id
             await bot_response.add_reaction('🗑️')
     
         except Exception as e:

@@ -64,6 +64,9 @@ class Jimbot(Client):
         if user == self.user:
             return
 
+        if reaction.message.id not in self.message_reactions:
+            return
+
         if self.message_reactions.pop(reaction.message.id, None) == user.id:
             await reaction.message.delete()
         

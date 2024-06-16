@@ -61,13 +61,13 @@ class Jimbot(Client):
     
     async def on_reaction_add(self, reaction, user):
 
-        if user == self.user:
+        if user.id == self.user.id:
             return
 
         if reaction.message.id not in self.message_reactions:
             return
 
-        if self.message_reactions.pop(reaction.message.id, None) == user.id:
+        if self.message_reactions[reaction.message.id] == user.id:
             await reaction.message.delete()
         
         else:
